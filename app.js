@@ -154,11 +154,18 @@ app.post("/download", function (request, response) {
     response.setHeader("Content-Type", "text/html");
 
     // Change the filePath to current working directory using the "path" method
-    const filePath = "history_files/" + file_name;
+    const rootDirectory = "history_files\\"
+    const filePath = path.join(process.cwd() + "/history_files/", file_name);
+    const fileName = path.normalize(filePath);
+
     console.log(filePath);
     try {
-      content = fs.readFileSync(filePath, "utf8");
-      response.end(content);
+      if (fileName.indexOf(rootDirectory) < 0) {
+        response.end("File not found")
+      } else {
+        content = fs.readFileSync(filePath, "utf8");
+        response.end(content);
+      }
     } catch (err) {
       console.log(err);
       response.end("File not found");
